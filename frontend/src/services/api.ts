@@ -26,7 +26,7 @@ async function fetchWithRetry(
   url: string,
   options: RequestInit,
   onWakeUp?: (message: string) => void,
-  retriesRemaining = 1,
+  retriesRemaining = 6, // 6 retries * 8 seconds = 48 seconds, which covers a typical Render wakeup cycle
   delayMs = 8000
 ): Promise<Response> {
   try {
@@ -36,7 +36,7 @@ async function fetchWithRetry(
       // 502 Bad Gateway, 503 Service Unavailable, or 504 Gateway Timeout are common when Render wakes up
       if ([502, 503, 504].includes(response.status) && retriesRemaining > 0) {
         if (onWakeUp) {
-          onWakeUp("Backend is starting. This may take up to a minute.");
+          onWakeUp("Backend is starting. This may take up to a minute...");
         }
         console.warn(`Render backend returned status ${response.status} (waking up). Retrying in ${delayMs}ms...`);
         await new Promise((resolve) => setTimeout(resolve, delayMs));
@@ -61,9 +61,9 @@ async function fetchWithRetry(
     // If it's a network error (failed to fetch) and we have retries remaining:
     if (retriesRemaining > 0) {
       if (onWakeUp) {
-        onWakeUp("Backend is starting. This may take up to a minute.");
+        onWakeUp("Backend is starting. This may take up to a minute...");
       }
-      console.warn("Network connection failed, backend might be starting up. Retrying in 8s...", error);
+      console.warn("Network connection failed, backend might be starting up. Retrying...", error);
       await new Promise((resolve) => setTimeout(resolve, delayMs));
       return fetchWithRetry(url, options, onWakeUp, retriesRemaining - 1, delayMs);
     }
@@ -78,7 +78,6 @@ async function fetchWithRetry(
 
 /**
  * Uploads a network CSV file to /predict/network.
- * Supports progress updates and cold start automatic retries.
  */
 export async function uploadNetworkCSV(
   file: File,
@@ -102,7 +101,6 @@ export async function uploadNetworkCSV(
 
 /**
  * Uploads a malware CSV file to /predict/malware.
- * Supports progress updates and cold start automatic retries.
  */
 export async function uploadMalwareCSV(
   file: File,

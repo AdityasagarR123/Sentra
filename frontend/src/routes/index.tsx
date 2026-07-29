@@ -1,208 +1,198 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { motion } from "framer-motion";
 import {
   ArrowRight,
-  BarChart3,
-  Binary,
+  Boxes,
   Cpu,
   Database,
   FileSearch,
-  Layers,
+  Gauge,
+  LineChart,
+  Lock,
   Network,
-  ShieldAlert,
-  Waves,
+  ScanLine,
+  ServerCog,
+  ShieldCheck,
 } from "lucide-react";
 
-import { FeatureCard } from "@/components/common/feature-card";
-import { SectionHeader } from "@/components/common/section-header";
-import { FadeIn, WordsPullUp } from "@/components/ui/words-pull-up";
+import { PageShell } from "@/components/PageShell";
+import { SectionHeader } from "@/components/SectionHeader";
+import { FeatureCard } from "@/components/FeatureCard";
+import { Button } from "@/components/ui/button";
+import heroImage from "@/assets/hero-rocks.jpg";
 
 export const Route = createFileRoute("/")({
+  component: Home,
   head: () => ({
     meta: [
-      { title: "SentinelAI — AI-Based Cyber Threat Detection Framework" },
+      { title: "SENTRA — AI-Based Cyber Threat Detection Framework" },
       {
         name: "description",
         content:
-          "A production-ready dashboard for AI-based network intrusion detection and malware family classification, powered by a FastAPI inference backend.",
+          "SENTRA is an AI-based cyber threat detection framework for network intrusion detection and malware family classification, with an analyst-grade dashboard.",
       },
-      { property: "og:title", content: "SentinelAI — AI-Based Cyber Threat Detection" },
+      { property: "og:title", content: "SENTRA — AI-Based Cyber Threat Detection Framework" },
       {
         property: "og:description",
         content:
-          "Upload network traffic or malware feature datasets and review model predictions, confidence and risk levels.",
+          "Network intrusion detection and malware classification in one analyst-grade dashboard.",
       },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "/" },
     ],
+    links: [{ rel: "canonical", href: "/" }],
   }),
-  component: Home,
 });
 
 const features = [
   {
-    icon: Network,
-    title: "Traffic-level intrusion detection",
+    icon: ScanLine,
+    title: "Flow-level intrusion detection",
     description:
-      "Classify flows from NSL-KDD / CIC-IDS style datasets into benign and attack categories.",
+      "Classify network flows into benign traffic or attack families such as DDoS, port scanning and brute force.",
   },
   {
-    icon: Binary,
+    icon: FileSearch,
     title: "Malware family classification",
     description:
-      "Map static and behavioural feature vectors to known malware families with confidence scores.",
+      "Map static and behavioural features of samples to known malware families with per-record confidence.",
   },
   {
-    icon: BarChart3,
-    title: "Explainable result surfaces",
+    icon: Gauge,
+    title: "Confidence & risk scoring",
     description:
-      "Every prediction ships with confidence, risk level, distribution charts and a record-level table.",
+      "Every prediction carries a calibrated confidence score and a derived risk level for triage ordering.",
   },
   {
-    icon: ShieldAlert,
-    title: "Risk-graded recommendations",
-    description: "Outputs are translated into analyst-ready actions instead of raw probabilities.",
-  },
-  {
-    icon: Database,
-    title: "CSV-first ingestion",
-    description: "Drag-and-drop batch uploads with validation for format, emptiness and size.",
-  },
-  {
-    icon: Layers,
-    title: "Composable frontend",
+    icon: LineChart,
+    title: "Visual analytics",
     description:
-      "Reusable upload, metric, chart and table components so new detectors plug in quickly.",
+      "Distribution charts, summary statistics and per-record tables make batch results readable at a glance.",
+  },
+  {
+    icon: Lock,
+    title: "No data retention",
+    description:
+      "Files are streamed to the detection API on demand. The interface keeps nothing in local storage.",
+  },
+  {
+    icon: ServerCog,
+    title: "API-ready frontend",
+    description:
+      "All result surfaces are typed placeholders wired to a single integration point per detection page.",
   },
 ];
 
 const stack = [
-  { label: "React 19 + TypeScript", note: "Interface layer" },
-  { label: "TanStack Router", note: "Routing & SSR" },
-  { label: "Tailwind CSS v4", note: "Design system" },
-  { label: "Recharts", note: "Visualisation" },
-  { label: "FastAPI", note: "Inference API" },
-  { label: "scikit-learn / TensorFlow", note: "Model runtime" },
+  { icon: Boxes, name: "React 19 + TypeScript", note: "Component-driven UI layer" },
+  { icon: Cpu, name: "FastAPI", note: "Detection service (external)" },
+  { icon: Database, name: "Pandas / Scikit-learn", note: "Feature pipeline & classical models" },
+  { icon: Network, name: "TensorFlow / PyTorch", note: "Deep sequence & CNN classifiers" },
 ];
 
 const pipeline = [
-  { step: "01", title: "Ingest", body: "Analyst uploads a CSV of network flows or malware feature vectors." },
-  { step: "02", title: "Validate", body: "Client checks extension, size and emptiness before dispatch." },
-  { step: "03", title: "Infer", body: "The FastAPI service runs preprocessing and the trained model." },
-  { step: "04", title: "Interpret", body: "Predictions, confidence and risk levels return to the dashboard." },
-  { step: "05", title: "Act", body: "Charts, tables and recommendations guide the response." },
+  { step: "01", title: "Upload", copy: "Analyst uploads a preprocessed CSV export of flows or samples." },
+  { step: "02", title: "Validate", copy: "Format, encoding and schema checks run before anything is sent." },
+  { step: "03", title: "Infer", copy: "The detection API scores each record with the trained model." },
+  { step: "04", title: "Report", copy: "Predictions, confidence, risk and recommendations are rendered." },
 ];
 
-function Home() {
+export default function Home() {
   return (
-    <div>
+    <PageShell>
       {/* Hero */}
-      <section className="grain veil relative overflow-hidden border-b border-border/60">
-        <div className="mx-auto max-w-7xl px-5 py-24 sm:px-8 sm:py-32">
-          <FadeIn>
-            <span className="eyebrow">AI-Based Cyber Threat Detection Framework</span>
-          </FadeIn>
-          <h1 className="mt-6 max-w-4xl text-5xl leading-[1.05] sm:text-6xl md:text-7xl">
-            <WordsPullUp text="Detect intrusions and malware" />
-            <span className="block italic text-primary">
-              <WordsPullUp text="before they become incidents." delay={0.25} />
-            </span>
-          </h1>
-          <FadeIn delay={0.4} className="mt-8 max-w-xl">
-            <p className="text-base leading-relaxed text-muted-foreground">
-              SentinelAI is a unified analyst console for two machine-learning detectors: network
-              intrusion classification and malware family identification. Upload a dataset, review
-              graded risk, act with confidence.
-            </p>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Link
-                to="/network-detection"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
-              >
-                Network detection <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                to="/malware-detection"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card/50 px-6 py-3 text-sm font-medium transition-colors hover:border-primary/50 hover:text-primary"
-              >
-                Malware detection <ArrowRight className="h-4 w-4" />
-              </Link>
+      <section className="relative min-h-[92vh] w-full overflow-hidden">
+        <img
+          src={heroImage}
+          alt="Dark rock formations lit by a burning orange horizon"
+          width={1920}
+          height={1088}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,color-mix(in_oklab,var(--background)_70%,transparent),transparent_45%,color-mix(in_oklab,var(--background)_92%,transparent))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,color-mix(in_oklab,var(--background)_82%,transparent),color-mix(in_oklab,var(--background)_35%,transparent)_55%,transparent)]" />
+
+
+        <div className="relative mx-auto flex min-h-[92vh] max-w-6xl flex-col justify-center px-4 pt-32 pb-40 sm:px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="max-w-2xl [text-shadow:0_2px_40px_oklch(0_0_0/0.65)]"
+          >
+            <div className="mb-2 h-5 w-5 border-l-2 border-t-2 border-foreground/80" />
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-2 sm:grid-cols-[auto_auto] sm:items-end sm:gap-6">
+              <h1 className="font-display text-6xl font-bold leading-none tracking-tighter sm:text-8xl">
+                SENTRA<span className="align-super text-2xl sm:text-4xl">®</span>
+              </h1>
+              <p className="pb-3 font-mono text-[11px] uppercase tracking-[0.2em] text-foreground/70">
+                ©2026
+                <br />
+                Established since.
+              </p>
             </div>
-          </FadeIn>
+            <p className="mt-5 max-w-md text-sm font-medium leading-relaxed sm:text-base">
+              An AI-based cyber threat detection framework — intrusion analysis, malware
+              classification and explainable risk scoring in one analyst workspace.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button asChild size="lg">
+                <Link to="/network-detection">
+                  Network detection <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <Link to="/malware-detection">Malware detection</Link>
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 mx-auto hidden max-w-6xl px-6 pb-8 lg:block">
+          <div className="flex items-end justify-between">
+            <p className="font-mono text-xs leading-relaxed text-foreground/80">
+              Security Research Lab
+              <br />
+              Threat Intelligence Unit
+              <br />
+              Batch inference · CSV
+            </p>
+            <ul className="space-y-1 text-right font-mono text-sm">
+              {["01 Ingestion", "02 Feature engineering", "03 Model inference", "04 Reporting"].map(
+                (item, i) => (
+                  <li
+                    key={item}
+                    className="text-foreground"
+                    style={{ opacity: 0.35 + i * 0.2 }}
+                  >
+                    {item}
+                  </li>
+                ),
+              )}
+            </ul>
+          </div>
         </div>
       </section>
 
       {/* Overview */}
-      <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8">
-        <SectionHeader
-          eyebrow="Project overview"
-          title="One framework, two detection surfaces"
-          description="The framework separates the analyst interface from the inference layer. This dashboard handles ingestion, validation, state and interpretation; the FastAPI backend owns preprocessing and model execution — so detectors can evolve without reworking the UI."
-        />
-        <div className="mt-12 grid gap-6 md:grid-cols-2">
-          <FadeIn>
-            <Link
-              to="/network-detection"
-              className="group flex h-full flex-col justify-between rounded-2xl border border-border bg-card/50 p-8 transition-colors hover:border-primary/50"
-            >
-              <div>
-                <Waves className="h-6 w-6 text-primary" />
-                <h3 className="mt-6 text-2xl">Network Intrusion Detection</h3>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                  Batch-classify connection records into benign traffic or attack categories such as
-                  DoS, Probe, R2L and U2R, with per-record confidence and an aggregate risk level.
-                </p>
-              </div>
-              <span className="mt-8 inline-flex items-center gap-2 text-sm text-primary">
-                Open detector <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </span>
-            </Link>
-          </FadeIn>
-          <FadeIn delay={0.1}>
-            <Link
-              to="/malware-detection"
-              className="group flex h-full flex-col justify-between rounded-2xl border border-border bg-card/50 p-8 transition-colors hover:border-primary/50"
-            >
-              <div>
-                <FileSearch className="h-6 w-6 text-primary" />
-                <h3 className="mt-6 text-2xl">Malware Detection</h3>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                  Identify the likely malware family behind extracted static and behavioural
-                  features, returning threat severity and a containment recommendation.
-                </p>
-              </div>
-              <span className="mt-8 inline-flex items-center gap-2 text-sm text-primary">
-                Open detector <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </span>
-            </Link>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8">
-        <SectionHeader eyebrow="Key features" title="Built for analyst workflows" />
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((f, i) => (
-            <FadeIn key={f.title} delay={i * 0.05}>
-              <FeatureCard {...f} index={`0${i + 1}`} className="h-full" />
-            </FadeIn>
-          ))}
-        </div>
-      </section>
-
-      {/* Stack */}
-      <section className="border-y border-border/60 bg-card/25">
-        <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8">
+      <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
+        <div className="grid gap-10 lg:grid-cols-[1fr_1fr]">
           <SectionHeader
-            eyebrow="Technology stack"
-            title="Modern frontend, Python inference"
-            description="A strict boundary between presentation and modelling keeps the system portable."
+            eyebrow="Project overview"
+            title="Two detection engines, one analyst surface"
+            description="SENTRA unifies network intrusion detection and malware family classification behind a single dashboard. Analysts upload batch CSV exports, the detection service scores every record, and the interface turns raw model output into prioritised, explainable findings."
           />
-          <div className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
-            {stack.map((s) => (
-              <div key={s.label} className="bg-background p-6">
-                <Cpu className="h-4 w-4 text-primary" />
-                <p className="mt-4 text-base">{s.label}</p>
-                <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                  {s.note}
+          <div className="grid grid-cols-2 gap-4 self-center">
+            {[
+              { k: "Detection modules", v: "02" },
+              { k: "Result surfaces", v: "12+" },
+              { k: "Reusable components", v: "09" },
+              { k: "Backend coupling", v: "REST" },
+            ].map((item) => (
+              <div key={item.k} className="surface-panel rounded-2xl p-5">
+                <p className="font-display text-3xl font-semibold text-gradient-ember">{item.v}</p>
+                <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                  {item.k}
                 </p>
               </div>
             ))}
@@ -210,42 +200,85 @@ function Home() {
         </div>
       </section>
 
-      {/* Pipeline */}
-      <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8">
-        <SectionHeader eyebrow="Workflow / pipeline" title="From CSV to decision in five steps" />
-        <div className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-5">
-          {pipeline.map((p) => (
-            <div key={p.step} className="bg-background p-6">
-              <span className="font-mono text-[11px] text-primary">{p.step}</span>
-              <p className="mt-4 text-lg">{p.title}</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{p.body}</p>
+      {/* Features */}
+      <section className="border-y border-border bg-card/30">
+        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
+          <SectionHeader eyebrow="Key features" title="Built for triage, not for demos" />
+          <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {features.map((feature) => (
+              <FeatureCard key={feature.title} {...feature} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Technology stack */}
+      <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
+        <SectionHeader
+          eyebrow="Technology stack"
+          title="Frontend today, FastAPI tomorrow"
+          description="The interface is fully decoupled: swapping placeholder state for live responses touches a single handler per detection page."
+        />
+        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {stack.map(({ icon: Icon, name, note }) => (
+            <div key={name} className="surface-panel rounded-2xl p-6">
+              <Icon className="h-5 w-5 text-primary" />
+              <p className="mt-4 font-semibold">{name}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{note}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="mx-auto max-w-7xl px-5 pb-8 sm:px-8">
-        <div className="veil grain relative overflow-hidden rounded-3xl border border-border p-10 text-center sm:p-16">
-          <h2 className="mx-auto max-w-2xl text-4xl leading-tight sm:text-5xl">
-            Start with a dataset. End with a decision.
-          </h2>
-          <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link
-              to="/network-detection"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
-            >
-              Analyze network traffic <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              to="/documentation"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card/50 px-6 py-3 text-sm font-medium transition-colors hover:border-primary/50 hover:text-primary"
-            >
-              Read the API guide
-            </Link>
+      {/* Pipeline */}
+      <section className="border-y border-border bg-card/30">
+        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
+          <SectionHeader eyebrow="Workflow" title="How a batch moves through the framework" />
+          <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {pipeline.map((item) => (
+              <div key={item.step} className="surface-panel relative rounded-2xl p-6">
+                <span className="font-mono text-xs tracking-[0.2em] text-primary">{item.step}</span>
+                <h3 className="mt-4 text-lg font-semibold">{item.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.copy}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
-    </div>
+
+      {/* Modules */}
+      <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
+        <SectionHeader eyebrow="Detection modules" title="Choose an engine to start" />
+        <div className="mt-12 grid gap-6 lg:grid-cols-2">
+          {[
+            {
+              icon: Network,
+              title: "Network Intrusion Detection",
+              copy: "Upload flow-level CSV exports and classify traffic into benign or attack categories, with attack distribution, risk scoring and record-level output.",
+              to: "/network-detection" as const,
+              cta: "Open network detection",
+            },
+            {
+              icon: ShieldCheck,
+              title: "Malware Detection",
+              copy: "Upload extracted sample features and predict malware families with confidence, severity, recommended containment steps and per-sample results.",
+              to: "/malware-detection" as const,
+              cta: "Open malware detection",
+            },
+          ].map(({ icon: Icon, title, copy, to, cta }) => (
+            <div key={title} className="surface-panel glow-ember flex flex-col rounded-3xl p-8">
+              <Icon className="h-6 w-6 text-primary" />
+              <h3 className="mt-6 text-2xl font-semibold">{title}</h3>
+              <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">{copy}</p>
+              <Button asChild className="mt-8 self-start">
+                <Link to={to}>
+                  {cta} <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          ))}
+        </div>
+      </section>
+    </PageShell>
   );
 }

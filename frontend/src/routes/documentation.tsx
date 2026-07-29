@@ -1,128 +1,169 @@
 import { createFileRoute } from "@tanstack/react-router";
-
+import { PageShell } from "@/components/PageShell";
+import { SectionHeader } from "@/components/SectionHeader";
+import { AlertBox } from "@/components/AlertBox";
+import { DataTable, type DataTableColumn } from "@/components/DataTable";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { AlertBox } from "@/components/common/alert-box";
-import { DataTable, type DataTableColumn } from "@/components/common/data-table";
-import { SectionHeader } from "@/components/common/section-header";
-import { FadeIn } from "@/components/ui/words-pull-up";
 
 export const Route = createFileRoute("/documentation")({
+  component: Documentation,
   head: () => ({
     meta: [
-      { title: "Documentation & API Guide — SentinelAI" },
+      { title: "Documentation & API Guide — SENTRA" },
       {
         name: "description",
         content:
-          "File format requirements, upload instructions, processing workflow, result interpretation and FAQ for the detection framework.",
+          "Supported file formats, upload instructions, processing workflow, result interpretation and FAQ for the SENTRA detection framework.",
       },
-      { property: "og:title", content: "Documentation & API Guide — SentinelAI" },
+      { property: "og:title", content: "Documentation & API Guide — SENTRA" },
       {
         property: "og:description",
-        content: "How to prepare datasets, run an analysis and interpret detection results.",
+        content: "How to prepare files, run a detection and read the results.",
       },
+      { property: "og:type", content: "article" },
+      { property: "og:url", content: "/documentation" },
     ],
+    links: [{ rel: "canonical", href: "/documentation" }],
   }),
-  component: Documentation,
 });
 
-interface FieldRow extends Record<string, unknown> {
+interface EndpointRow extends Record<string, unknown> {
   id: string;
-  label: string;
-  confidence: string;
-  severity: string;
+  method: string;
+  path: string;
+  purpose: string;
+  status: string;
 }
 
-const columns: DataTableColumn<FieldRow>[] = [
-  { key: "id", header: "Field" },
-  { key: "label", header: "Type" },
-  { key: "confidence", header: "Required", align: "right" },
-  { key: "severity", header: "Notes", align: "right" },
+const endpointColumns: DataTableColumn<EndpointRow>[] = [
+  { key: "method", header: "Method" },
+  { key: "path", header: "Endpoint" },
+  { key: "purpose", header: "Purpose" },
+  { key: "status", header: "Status", align: "right" },
 ];
 
-const fields: FieldRow[] = [
-  { id: "header row", label: "string", confidence: "Yes", severity: "Column names must match training schema" },
-  { id: "numeric features", label: "float / int", confidence: "Yes", severity: "No missing values" },
-  { id: "categorical features", label: "string", confidence: "Optional", severity: "Encoded server-side" },
-  { id: "label", label: "string", confidence: "No", severity: "Ignored during inference" },
+const endpoints: EndpointRow[] = [
+  { id: "1", method: "POST", path: "/predict/network", purpose: "Batch intrusion detection from a flow CSV", status: "Live" },
+  { id: "2", method: "POST", path: "/predict/malware", purpose: "Malware family classification from a feature CSV", status: "Live" },
+  { id: "3", method: "GET", path: "/docs", purpose: "API interactive documentation", status: "Live" },
+  { id: "4", method: "GET", path: "/", purpose: "Service health probe", status: "Live" },
 ];
 
-const steps = [
-  { title: "Supported file format", body: "Comma-separated .csv files with a header row, UTF-8 encoded, up to 25 MB. Excel workbooks and JSON are not accepted." },
-  { title: "Upload instructions", body: "Open a detector page, drag the file into the upload zone or use Browse file, confirm the filename appears, then press Analyze." },
-  { title: "Processing workflow", body: "The file is validated in the browser, sent to the FastAPI endpoint as multipart/form-data, preprocessed, scored by the model and returned as JSON." },
-  { title: "Result interpretation", body: "Prediction is the dominant class, confidence is the calibrated probability, and risk/severity maps class and confidence to a four-tier scale with a recommendation." },
+const faqs = [
+  {
+    q: "Which file formats are supported?",
+    a: "UTF-8 encoded .csv files with a header row, up to 25 MB. Other formats are rejected during client-side validation.",
+  },
+  {
+    q: "Does the interface store my uploads?",
+    a: "No. The file is held in memory for the duration of the request and is never written to local storage or a browser database.",
+  },
+  {
+    q: "Why do results show placeholder values?",
+    a: "They don't! The frontend is fully connected to the live FastAPI threat detection backend. Results represent the actual predictions and confidence scores returned by the machine learning models.",
+  },
+  {
+    q: "How should confidence be interpreted?",
+    a: "Confidence is the model's calibrated probability for the winning class. Values below roughly 0.6 should be treated as low-certainty and routed to manual review.",
+  },
+  {
+    q: "What determines the risk level?",
+    a: "Risk combines the predicted class severity with the confidence score and the share of flagged records in the batch.",
+  },
 ];
 
-const faq = [
-  { q: "Is the backend connected yet?", a: "Not yet. Every result on the detector pages is placeholder data. The Analyze action is wired to a single integration point so the FastAPI call can be dropped in without touching UI code." },
-  { q: "What happens to my uploaded file?", a: "Nothing is uploaded in the current build — the file is only read in the browser for validation and display." },
-  { q: "Which endpoints will be used?", a: "POST /api/v1/network/predict for intrusion detection and POST /api/v1/malware/predict for malware classification, both accepting multipart/form-data with a `file` field." },
-  { q: "How are errors surfaced?", a: "Invalid extension, empty file, missing selection, upload failure and API errors each render a dedicated alert in the upload panel." },
-  { q: "Can I analyze a single record?", a: "The interface is batch-first, but a one-row CSV works exactly the same way." },
-];
-
-function Documentation() {
+export default function Documentation() {
   return (
-    <div className="mx-auto max-w-5xl px-5 py-16 sm:px-8 sm:py-24">
-      <SectionHeader
-        eyebrow="Documentation / API guide"
-        title="How to use the framework"
-        description="Everything an analyst needs to prepare a dataset, run an analysis and read the output correctly."
-      />
+    <PageShell>
+      <div className="mx-auto max-w-6xl px-4 pb-24 pt-28 sm:px-6 sm:pt-36">
+        <SectionHeader
+          eyebrow="Documentation"
+          title="How to use the framework"
+          description="Everything an analyst needs to prepare a dataset, run a detection and read the output — plus the API surface the frontend expects."
+        />
 
-      <div className="mt-14 space-y-5">
-        {steps.map((s, i) => (
-          <FadeIn key={s.title} delay={i * 0.05}>
-            <div className="rounded-2xl border border-border bg-card/40 p-7">
-              <span className="font-mono text-[11px] text-primary">0{i + 1}</span>
-              <h3 className="mt-3 text-xl">{s.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
-            </div>
-          </FadeIn>
-        ))}
+        <div className="mt-12 grid gap-6 lg:grid-cols-3">
+          <div className="surface-panel rounded-3xl p-7">
+            <h3 className="text-lg font-semibold">Supported file format</h3>
+            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+              <li>• Extension: <span className="font-mono text-foreground">.csv</span></li>
+              <li>• Encoding: UTF-8, comma delimited</li>
+              <li>• Header row required</li>
+              <li>• Maximum size: 25 MB</li>
+              <li>• Column order must match the model feature schema</li>
+            </ul>
+          </div>
+
+          <div className="surface-panel rounded-3xl p-7">
+            <h3 className="text-lg font-semibold">Upload instructions</h3>
+            <ol className="mt-4 space-y-2 text-sm text-muted-foreground">
+              <li>1. Open a detection module from the navigation.</li>
+              <li>2. Drag your CSV onto the drop zone, or use Browse file.</li>
+              <li>3. Confirm the filename and size shown below the drop zone.</li>
+              <li>4. Press Analyze and wait for the service response.</li>
+            </ol>
+          </div>
+
+          <div className="surface-panel rounded-3xl p-7">
+            <h3 className="text-lg font-semibold">Processing workflow</h3>
+            <ol className="mt-4 space-y-2 text-sm text-muted-foreground">
+              <li>1. Client-side validation of type, size and emptiness.</li>
+              <li>2. Multipart upload to the FastAPI detection endpoint.</li>
+              <li>3. Feature extraction and model inference server-side.</li>
+              <li>4. JSON response rendered into metrics, charts and tables.</li>
+            </ol>
+          </div>
+        </div>
+
+        <div className="mt-16">
+          <SectionHeader eyebrow="Result interpretation" title="Reading the output" />
+          <div className="mt-8 grid gap-5 md:grid-cols-2">
+            {[
+              { t: "Prediction", c: "The winning class for the batch — an attack category or a malware family." },
+              { t: "Confidence score", c: "Probability assigned to the winning class, expressed as a percentage." },
+              { t: "Risk / severity level", c: "Derived triage priority: Low, Medium, High or Critical." },
+              { t: "Recommendation", c: "Suggested containment or mitigation action returned with the prediction." },
+              { t: "Distribution charts", c: "Share and absolute count of each predicted class across the batch." },
+              { t: "Record table", c: "Per-record predictions so individual flows or samples can be inspected." },
+            ].map((item) => (
+              <div key={item.t} className="surface-panel rounded-2xl p-6">
+                <p className="font-semibold">{item.t}</p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.c}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-16">
+          <SectionHeader eyebrow="API guide" title="Endpoints the frontend expects" />
+          <AlertBox className="mt-6" variant="success" title="Connected to API Backend">
+            These routes describe the live contract that the dashboard uses to interact with the
+            FastAPI machine learning service.
+          </AlertBox>
+          <DataTable className="mt-6" columns={endpointColumns} rows={endpoints} />
+        </div>
+
+        <div className="mt-16">
+          <SectionHeader eyebrow="FAQ" title="Frequently asked questions" />
+          <Accordion type="single" collapsible className="surface-panel mt-8 rounded-3xl px-6">
+            {faqs.map((faq) => (
+              <AccordionItem key={faq.q} value={faq.q}>
+                <AccordionTrigger className="text-left text-sm font-semibold">
+                  {faq.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground">
+                  {faq.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
       </div>
-
-      <section className="mt-16">
-        <h2 className="text-2xl">Expected CSV schema</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Placeholder schema — replace with the exact feature list once the backend contract is
-          fixed.
-        </p>
-        <DataTable className="mt-6" columns={columns} rows={fields} />
-      </section>
-
-      <section className="mt-16">
-        <h2 className="text-2xl">Request example</h2>
-        <pre className="mt-5 overflow-x-auto rounded-2xl border border-border bg-card/60 p-6 font-mono text-xs leading-relaxed text-muted-foreground">
-{`curl -X POST https://api.example.com/api/v1/network/predict \\
-  -H "Accept: application/json" \\
-  -F "file=@flows.csv"`}
-        </pre>
-      </section>
-
-      <section className="mt-16">
-        <h2 className="text-2xl">FAQ</h2>
-        <Accordion type="single" collapsible className="mt-5">
-          {faq.map((f) => (
-            <AccordionItem key={f.q} value={f.q}>
-              <AccordionTrigger className="text-left text-base">{f.q}</AccordionTrigger>
-              <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
-                {f.a}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </section>
-
-      <AlertBox className="mt-12" tone="warning" title="Integration pending">
-        This build is frontend-only. No AI logic runs in the browser and no network requests are
-        made to a model service.
-      </AlertBox>
-    </div>
+    </PageShell>
   );
 }
