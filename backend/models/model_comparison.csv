@@ -1,0 +1,5 @@
+Model,Dataset,Accuracy,Weighted F1
+MLP,NSL-KDD Network Intrusion,0.9906573239906573,0.9904813707063973
+Random Forest,NSL-KDD Network Intrusion,0.996996996996997,0.9969694960841293
+MLP,Malware Classification,0.975,0.975
+Random Forest,Malware Classification,0.96125,0.9612461850640471
